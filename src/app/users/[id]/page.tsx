@@ -4,6 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useState } from "react";
+import { Button } from "flowbite-react";
+
 
 const fetchUserById = async (id: string) => {
   const res = await fetch(`https://jsonplaceholder.typicode.com/users/${id}`);
@@ -47,7 +49,7 @@ export default function UserProfilePage() {
     <div className="p-6 space-y-6">
       {/* User Profile */}
       <div className="bg-pink-100 border-pink-300 shadow-lg rounded-2xl p-6">
-        <h1 className="text-3xl font-bold text-pink-700">{user.name}'s Profile</h1>
+        <h1 className="text-3xl font-bold text-pink-700">{user.name}&apos;s Profile</h1>
         <p className="text-gray-700">📧 {user.email}</p>
         <p className="text-gray-700">📞 {user.phone}</p>
         <p className="text-gray-700">🌐 {user.website}</p>
@@ -84,7 +86,7 @@ export default function UserProfilePage() {
           {isAccordionOpen && (
             <div className="p-5 border-t-0 border-gray-200 dark:border-gray-700">
               <ul className="space-y-2">
-                {posts?.map((post: any) => (
+                {posts?.map((post: unknown) => (
                   <li key={post.id}>
                     <Link
                       href={`https://jsonplaceholder.typicode.com/posts/${post.id}`}
