@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useState } from "react";
-import { Button } from "flowbite-react";
+import { post } from "@/lib/types";
 
 
 const fetchUserById = async (id: string) => {
@@ -86,7 +86,7 @@ export default function UserProfilePage() {
           {isAccordionOpen && (
             <div className="p-5 border-t-0 border-gray-200 dark:border-gray-700">
               <ul className="space-y-2">
-                {posts?.map((post: unknown) => (
+                {posts?.map((post: post) => (
                   <li key={post.id}>
                     <Link
                       href={`https://jsonplaceholder.typicode.com/posts/${post.id}`}

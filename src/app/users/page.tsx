@@ -39,10 +39,8 @@ const UsersPage = () => {
           <p className="mt-2 text-sm text-gray-800 relative z-10">{user.email}</p>
 
           <Link href={`/users/${user.id}`} passHref>
-      <button className="text-white bg-pink-500 hover:bg-pink-600 font-medium rounded-lg text-sm px-4 py-2 transition">
-        View Profile
-      </button>
-    </Link>
+          <Button className="c-white bg-pink-500 hover:bg-pink-600 font-medium rounded-lg text-sm px-4 py-2 transition">View Profile</Button>
+          </Link>
 
         </div>
         ))}
