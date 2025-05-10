@@ -2,21 +2,37 @@
 @plugin "flowbite-react/plugin/tailwindcss";
 @source "../../.flowbite-react/class-list.json";
 
+@font-face {
+  font-family: 'Lovely Valentine';
+  src: url('/fonts/Be My Glittertine.ttf') format('truetype');
+  font-weight: normal, bold;
+  font-style: normal, italic;
+}
+
+
+
+
 body {
+  font-family: 'Lovely Valentine', sans-serif;
   background-image: url('/pinkbg.png');
 }
 
+.card {
+  border-image-source: url('/pinkborder.png');
+}
+
+
 /* Custom styles for the user cards */
 .user-card {
-  border-width: 18px; /* Control the border thickness */
+  border-width: 15px; /* Control the border thickness */
   border-style: solid;
-  border-image-source: url('/pinkborder.png'); /* Path to your pink border image */
-  border-image-slice: 8 fill; /* Adjust the slice value based on your image */
-  border-image-width: 1%; /* Adjust to control the thickness of the image border */
+  border-image-source: url('/pinklaceborder.png'); /* Path to your pink border image */
+  border-image-slice:5 fill; /* Adjust the slice value based on your image */
+  border-image-width: 1.5%; /* Adjust to control the thickness of the image border */
   border-image-outset: 0; /* No border extension outside the box */
   border-image-repeat: round; /* Round repeat for seamless effect */
   padding: 20px;
-  border-radius: 12px; /* Optional: for rounded corners */
+  border-radius: 40px; /* Optional: for rounded corners */
   
   position: relative;
 }

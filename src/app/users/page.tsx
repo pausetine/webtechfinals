@@ -24,14 +24,9 @@ const UsersPage = () => {
         {users?.map((user = users) => (
           <div
           key={user.id}
-           className="relative group user-card bg-pink-200 p-4 shadow-lg overflow-hidden"
+           className="relative group user-card bg-pink-200 p-4 shadow-lg hover:bg-pink-8 overflow-hidden"
 >
-          {/* Glitter GIF overlay */}
-          <img
-            src="/flower.gif" // Make sure this file is inside your /public folder
-            alt="Glitter"
-            className="absolute inset-0 w-full h-full opacity-0 group-hover:opacity-50 transition duration-300 pointer-events-none"
-          />
+
         
           {/* Content */}
           <h3 className="text-xl font-semibold text-black relative z-10">{user.name}</h3>
