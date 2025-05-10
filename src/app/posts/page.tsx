@@ -1,40 +1,47 @@
 'use client';
 
-import { Button, Card, TextInput, Avatar } from 'flowbite-react';
 import { useState } from 'react';
+import { Button, Card, TextInput, Avatar } from 'flowbite-react';
+import { useQuery } from '@tanstack/react-query';
+import { fetchUsers } from '@/lib/api'; // <-- Make sure this exists
+import { useParams } from 'next/navigation';
 
-let commentIdCounter = 4;
-let postIdCounter = 3;
+interface Comment {
+  id: number;
+  author: string;
+  text: string;
+}
+
+interface Post {
+  id: number;
+  title: string;
+  content: string;
+  comments: Comment[];
+}
 
 export default function Home() {
-  const [posts, setPosts] = useState([
-    {
-      id: 1,
-      title: 'Welcome to the Y2K Blog',
-      content: 'This is our first post with vintage vibes!',
-      comments: [
-        { id: 1, author: 'User123', text: 'Love the aesthetic!' },
-        { id: 2, author: 'RetroFan', text: 'Bring back the 2000s!' },
-      ],
-    },
-    {
-      id: 2,
-      title: 'Why Flowbite is Cool',
-      content: 'Flowbite makes UI development quick and stylish.',
-      comments: [
-        { id: 3, author: 'DevGuy', text: 'Agreed, Flowbite saves me time.' },
-      ],
-    },
-  ]);
+  const { id } = useParams();
+  const [newComment, setNewComment] = useState<Record<number, string>>({});
+  const [isAccordionOpen, setIsAccordionOpen] = useState(false);
 
-  const [newComment, setNewComment] = useState({});
-  const [newPostTitle, setNewPostTitle] = useState('');
-  const [newPostContent, setNewPostContent] = useState('');
+  const {
+    data: posts,
+    isLoading: postsLoading,
+    isError: postsError,
+  } = useQuery<Post[]>({
+    queryKey: ['posts', id],
+    queryFn: () => fetchUsers(id as string),
+    enabled: !!id,
+  });
+
+  if (postsLoading) return <p>Loading...</p>;
+  if (postsError || !posts) return <p>Error loading posts.</p>;
 
   const handleAddComment = (postId: number) => {
-    const commentText = newComment[postId]?.trim();
-    if (!commentText) return;
+    const text = newComment[postId]?.trim();
+    if (!text) return;
 
+    // Fake update: in a real app, you'd make a mutation and refetch
     const updatedPosts = posts.map((post) =>
       post.id === postId
         ? {
@@ -42,62 +49,28 @@ export default function Home() {
             comments: [
               ...post.comments,
               {
-                id: commentIdCounter++,
+                id: Date.now(),
                 author: 'Guest',
-                text: commentText,
+                text,
               },
             ],
           }
         : post
     );
-    setPosts(updatedPosts);
-    setNewComment({ ...newComment, [postId]: '' });
-  };
 
-  const handleAddPost = () => {
-    const title = newPostTitle.trim();
-    const content = newPostContent.trim();
-    if (!title || !content) return;
-
-    const newPost = {
-      id: postIdCounter++,
-      title,
-      content,
-      comments: [],
-    };
-
-    setPosts([newPost, ...posts]);
-    setNewPostTitle('');
-    setNewPostContent('');
+    // This is a client-side only update for demo. No setPosts here since posts are from useQuery.
+    setNewComment((prev) => ({ ...prev, [postId]: '' }));
+    console.log('New comment added (not persisted):', updatedPosts);
   };
 
   return (
     <div className="p-6 space-y-6">
-      {/* New Post Form */}
-      <Card>
-        <h2 className="text-xl font-bold mb-2">Create New Post</h2>
-        <TextInput
-          placeholder="Post title"
-          value={newPostTitle}
-          onChange={(e) => setNewPostTitle(e.target.value)}
-          className="mb-2"
-        />
-        <TextInput
-          placeholder="Post content"
-          value={newPostContent}
-          onChange={(e) => setNewPostContent(e.target.value)}
-          className="mb-4"
-        />
-        <Button color="pink" onClick={handleAddPost}>
-          Add Post
-        </Button>
-      </Card>
-
-      {/* Posts */}
+      {/* Posts from API */}
       {posts.map((post) => (
         <Card key={post.id}>
           <h2 className="text-xl font-bold">{post.title}</h2>
           <p className="mb-4">{post.content}</p>
+
           <div className="space-y-2">
             <h3 className="font-semibold">Comments:</h3>
             {post.comments.map((comment) => (
@@ -107,12 +80,16 @@ export default function Home() {
                 <span>{comment.text}</span>
               </div>
             ))}
+
             <TextInput
               placeholder="Add a comment..."
               sizing="sm"
               value={newComment[post.id] || ''}
               onChange={(e) =>
-                setNewComment({ ...newComment, [post.id]: e.target.value })
+                setNewComment((prev) => ({
+                  ...prev,
+                  [post.id]: e.target.value,
+                }))
               }
             />
             <Button color="pink" size="sm" onClick={() => handleAddComment(post.id)}>
@@ -124,3 +101,4 @@ export default function Home() {
     </div>
   );
 }
+
