@@ -1,104 +1,98 @@
 'use client';
 
-import { useState } from 'react';
-import { Button, Card, TextInput, Avatar } from 'flowbite-react';
-import { useQuery } from '@tanstack/react-query';
-import { fetchUsers } from '@/lib/api'; // <-- Make sure this exists
-import { useParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { Spinner } from 'flowbite-react';
 
-interface Comment {
-  id: number;
-  author: string;
-  text: string;
-}
-
-interface Post {
+type Post = {
+  userId: number;
   id: number;
   title: string;
-  content: string;
-  comments: Comment[];
-}
+  body: string;
+};
+
+type Comment = {
+  postId: number;
+  id: number;
+  name: string;
+  email: string;
+  body: string;
+};
 
 export default function Home() {
-  const { id } = useParams();
-  const [newComment, setNewComment] = useState<Record<number, string>>({});
-  const [isAccordionOpen, setIsAccordionOpen] = useState(false);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [expandedPostId, setExpandedPostId] = useState<number | null>(null);
+  const [commentsMap, setCommentsMap] = useState<Record<number, Comment[]>>({});
+  const [loadingPostId, setLoadingPostId] = useState<number | null>(null);
 
-  const {
-    data: posts,
-    isLoading: postsLoading,
-    isError: postsError,
-  } = useQuery<Post[]>({
-    queryKey: ['posts', id],
-    queryFn: () => fetchUsers(id as string),
-    enabled: !!id,
-  });
+  useEffect(() => {
+    fetch('https://jsonplaceholder.typicode.com/posts')
+      .then((res) => res.json())
+      .then(setPosts)
+      .catch((err) => console.error('Failed to load posts', err));
+  }, []);
 
-  if (postsLoading) return <p>Loading...</p>;
-  if (postsError || !posts) return <p>Error loading posts.</p>;
+  const handlePostClick = async (postId: number) => {
+    // Toggle comments
+    if (expandedPostId === postId) {
+      setExpandedPostId(null);
+      return;
+    }
 
-  const handleAddComment = (postId: number) => {
-    const text = newComment[postId]?.trim();
-    if (!text) return;
+    setExpandedPostId(postId);
 
-    // Fake update: in a real app, you'd make a mutation and refetch
-    const updatedPosts = posts.map((post) =>
-      post.id === postId
-        ? {
-            ...post,
-            comments: [
-              ...post.comments,
-              {
-                id: Date.now(),
-                author: 'Guest',
-                text,
-              },
-            ],
-          }
-        : post
-    );
-
-    // This is a client-side only update for demo. No setPosts here since posts are from useQuery.
-    setNewComment((prev) => ({ ...prev, [postId]: '' }));
-    console.log('New comment added (not persisted):', updatedPosts);
+    // Fetch comments if not already loaded
+    if (!commentsMap[postId]) {
+      setLoadingPostId(postId);
+      try {
+        const res = await fetch(`https://jsonplaceholder.typicode.com/comments?postId=${postId}`);
+        const data = await res.json();
+        setCommentsMap((prev) => ({ ...prev, [postId]: data }));
+      } catch (err) {
+        console.error('Failed to load comments', err);
+      } finally {
+        setLoadingPostId(null);
+      }
+    }
   };
 
   return (
-    <div className="p-6 space-y-6">
-      {/* Posts from API */}
-      {posts.map((post) => (
-        <Card key={post.id}>
-          <h2 className="text-xl font-bold">{post.title}</h2>
-          <p className="mb-4">{post.content}</p>
+    <div className="p-6 max-w-3xl mx-auto">
+      <h1 className="text-2xl font-bold mb-6">Posts</h1>
 
-          <div className="space-y-2">
-            <h3 className="font-semibold">Comments:</h3>
-            {post.comments.map((comment) => (
-              <div key={comment.id} className="flex items-center space-x-2 text-sm">
-                <Avatar rounded size="xs" />
-                <span className="font-medium">{comment.author}:</span>
-                <span>{comment.text}</span>
+      <ul className="space-y-6">
+        {posts.map((post) => (
+          <li key={post.id} className="border rounded p-4 shadow-sm bg-white">
+            <button
+              onClick={() => handlePostClick(post.id)}
+              className="text-left w-full"
+            >
+              <h2 className="text-xl font-semibold text-pink-700">{post.title}</h2>
+              <p className="text-gray-700 mt-2">{post.body}</p>
+            </button>
+
+            {expandedPostId === post.id && (
+              <div className="mt-4">
+                <h3 className="text-lg font-medium text-gray-800 mb-2">Comments</h3>
+                {loadingPostId === post.id ? (
+                  <Spinner color="pink" aria-label="Loading comments..." />
+                ) : (
+                  <ul className="space-y-3">
+                    {commentsMap[post.id]?.map((comment) => (
+                      <li
+                        key={comment.id}
+                        className="border p-3 rounded bg-gray-50"
+                      >
+                        <p className="font-semibold">{comment.name}</p>
+                        <p className="text-sm text-gray-600">{comment.body}</p>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
-            ))}
-
-            <TextInput
-              placeholder="Add a comment..."
-              sizing="sm"
-              value={newComment[post.id] || ''}
-              onChange={(e) =>
-                setNewComment((prev) => ({
-                  ...prev,
-                  [post.id]: e.target.value,
-                }))
-              }
-            />
-            <Button color="pink" size="sm" onClick={() => handleAddComment(post.id)}>
-              Post Comment
-            </Button>
-          </div>
-        </Card>
-      ))}
+            )}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
-
