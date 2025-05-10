@@ -1,34 +1,42 @@
 'use client';
 
-import dynamic from 'next/dynamic';
 import { useQuery } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import ApexCharts from 'react-apexcharts';
 import { Spinner } from 'flowbite-react';
+import { useState, useEffect } from 'react';
 
-const ApexCharts = dynamic(() => import('react-apexcharts'), { ssr: false });
+// Fetch data functions
+const fetchUsers = async () => await (await fetch('https://jsonplaceholder.typicode.com/users')).json();
+const fetchPosts = async () => await (await fetch('https://jsonplaceholder.typicode.com/posts')).json();
+const fetchComments = async () => await (await fetch('https://jsonplaceholder.typicode.com/comments')).json();
 
 export default function Dashboard() {
-  const [series, setSeries] = useState<number[]>([]);
-  const [labels, setLabels] = useState<string[]>(['Users', 'Posts', 'Comments']);
+  const [chartData, setChartData] = useState({
+    series: [0, 0, 0],
+    labels: ['Users', 'Posts', 'Comments'],
+  });
 
   const { data: users, isLoading: loadingUsers } = useQuery({
     queryKey: ['users'],
-    queryFn: async () => await (await fetch('https://jsonplaceholder.typicode.com/users')).json(),
+    queryFn: fetchUsers,
   });
 
   const { data: posts, isLoading: loadingPosts } = useQuery({
     queryKey: ['posts'],
-    queryFn: async () => await (await fetch('https://jsonplaceholder.typicode.com/posts')).json(),
+    queryFn: fetchPosts,
   });
 
   const { data: comments, isLoading: loadingComments } = useQuery({
     queryKey: ['comments'],
-    queryFn: async () => await (await fetch('https://jsonplaceholder.typicode.com/comments')).json(),
+    queryFn: fetchComments,
   });
 
   useEffect(() => {
     if (users && posts && comments) {
-      setSeries([users.length, posts.length, comments.length]);
+      setChartData({
+        series: [users.length, posts.length, comments.length],
+        labels: ['Users', 'Posts', 'Comments'],
+      });
     }
   }, [users, posts, comments]);
 
@@ -40,22 +48,41 @@ export default function Dashboard() {
     );
   }
 
-  const options = {
+  const chartOptions = {
     chart: {
-      type: 'pie',
+      type: 'pie' as 'pie', // Ensure 'pie' is correctly typed here
     },
-    labels,
-    colors: ['#ff66b2', '#ff80b3', '#ff99cc'],
+    labels: chartData.labels,
+    responsive: [
+      {
+        breakpoint: 480,
+        options: {
+          chart: {
+            width: '100%',
+          },
+        },
+      },
+    ],
+    colors: ['#ff66b2', '#ff80b3', '#ff99cc'], // Pinkish colors
     legend: {
       position: 'top',
+      labels: {
+        colors: '#666',
+      },
     },
   };
 
   return (
     <div className="max-w-5xl mx-auto p-6">
-      <h2 className="text-4xl font-bold text-pink-700 mb-6">Dashboard</h2>
-      <div className="flex justify-center bg-white border-2 border-pink-300 p-4 rounded-2xl shadow-lg">
-        <ApexCharts options={options} series={series} type="pie" width={400} />
+      <h2 className="text-4xl font-bold text-pink-700 mb-4">Data Visualization</h2>
+
+      <div className="flex justify-center">
+        <ApexCharts
+          options={chartOptions}
+          series={chartData.series}
+          type="pie" // Ensure type is consistent here
+          width="400"
+        />
       </div>
     </div>
   );
