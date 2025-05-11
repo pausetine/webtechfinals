@@ -49,7 +49,8 @@ export default function UserProfilePage() {
     <div className="p-6 space-y-6">
       {/* User Profile */}
       <div className="bg-pink-100 border-pink-300 shadow-lg rounded-2xl p-6">
-        <h1 className="text-3xl font-bold text-pink-700">{user.name}&apos;s Profile</h1>
+        <h1 className="text-3xl font-bold text-pink-700">Welcome to {user.name}&apos;s Profile</h1>
+        <p className="text-black-700 font-bold ">@{user.username}</p>
         <p className="text-gray-700">📧 {user.email}</p>
         <p className="text-gray-700">📞 {user.phone}</p>
         <p className="text-gray-700">🌐 {user.website}</p>
@@ -63,7 +64,7 @@ export default function UserProfilePage() {
             <button
               type="button"
               onClick={() => setIsAccordionOpen(!isAccordionOpen)}
-              className="flex items-center justify-between w-full p-5 font-medium text-gray-500 border border-b-0 border-gray-200 rounded-t-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3"
+              className="flex items-center justify-between w-full p-5 font-medium text-gray-500 border border-b-0 border-pink-200 rounded-t-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-pink-400 dark:text-gray-400 hover:bg-pink-100 dark:hover:bg-pink-600 gap-3"
             >
               <span className="flex items-center">Posts:</span>
               <svg
@@ -84,12 +85,12 @@ export default function UserProfilePage() {
             </button>
           </h2>
           {isAccordionOpen && (
-            <div className="p-5 border-t-0 border-gray-200 dark:border-gray-700">
+            <div className="p-5 border-t-0 border-pink-200 dark:border-pink-400">
               <ul className="space-y-2">
                 {posts?.map((post: post) => (
                   <li key={post.id}>
                     <Link
-                      href={`https://jsonplaceholder.typicode.com/posts/${post.id}`}
+                      href={`/posts/${post.id}`}
                       target="_blank"
                       className="text-pink-600 hover:font-bold hover:no-underline"
                     >

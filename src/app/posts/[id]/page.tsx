@@ -77,7 +77,7 @@ export default function PostPage() {
   return (
     <div className="max-w-5xl mx-auto p-6">
       <Link href="/" className="text-pink-600 hover:underline text-lg">
-        ← Back to Posts
+        ← Posts
       </Link>
 
       <div className="mt-6 p-6 bg-white/80 rounded-2xl shadow-lg border-2 border-pink-300">
@@ -109,6 +109,7 @@ export default function PostPage() {
                   key={comment.id}
                   className="bg-pink-50 border border-pink-200 p-4 rounded-xl shadow-sm"
                 >
+                    <p className="text-pink-800 hover:underline text-l font-bold-s">{comment.email}</p>
                   <p className="font-semibold text-gray-800">
                     <span className="text-lg font-bold text-pink-700">{comment.name}</span>
                     {commenterId && (
@@ -123,8 +124,6 @@ export default function PostPage() {
                     )}
                   </p>
                   <p className="text-sm text-gray-600">{comment.body}</p>
-                  {/* Display email of the commenter */}
-                  <p className="text-xs text-gray-500">{comment.email}</p>
                 </li>
               );
             })}

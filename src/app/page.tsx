@@ -4,7 +4,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useQuery } from '@tanstack/react-query';
 
+// Fetch posts and users
 const fetchPosts = async () => await (await fetch('https://jsonplaceholder.typicode.com/posts')).json();
+const fetchUsers = async () => await (await fetch('https://jsonplaceholder.typicode.com/users')).json();
 
 export default function HomePage() {
   const { data: posts, isLoading, isError } = useQuery({
@@ -12,10 +14,14 @@ export default function HomePage() {
     queryFn: fetchPosts,
   });
 
+  const { data: users } = useQuery({
+    queryKey: ['users'],
+    queryFn: fetchUsers,
+  });
+
   return (
     <div className="max-w-5xl mx-auto p-6">
       <div className="relative p-8 bg-white/80 border-2 border-pink-300 rounded-2xl shadow-lg">
-        {/* Optional lace border background image */}
         <div className="absolute inset-0 -z-10 opacity-10 rounded-2xl overflow-hidden">
           <Image
             src="/pinklaceborder.png"
@@ -55,18 +61,30 @@ export default function HomePage() {
           <p>There was an error loading posts. Please try again later.</p>
         ) : (
           <div className="space-y-6">
-            {posts?.slice(0, 3).map((post: { id: number; title: string; body: string }) => (
-              <div key={post.id} className="bg-pink-50 border border-pink-200 p-6 rounded-xl shadow-sm">
-                <h3 className="text-2xl font-bold text-black-100 mb-2">{post.title}</h3>
-                <p className="text-lg text-gray-700 mb-4">{post.body}</p>
-                <Link
-                  href={`/posts/${post.id}`}
-                  className="text-pink-500 hover:underline font-semibold"
-                >
-                  Read more
-                </Link>
-              </div>
-            ))}
+            {posts?.slice(0, 3).map((post: { id: number; title: string; body: string; userId: number }) => {
+              const user = users?.find((u: any) => u.id === post.userId);
+
+              return (
+                <div key={post.id} className="bg-pink-50 border border-pink-200 p-6 rounded-xl shadow-sm">
+                  {user && (
+                    <p className="text-xl text-pink-700 mb-1">
+                      {' '}
+                      <Link href={`/users/${user.id}`} className="underline hover:text-pink-800">
+                        @{user.username}
+                      </Link>
+                    </p>
+                  )}
+                  <h3 className="text-2xl font-bold text-black mb-2">{post.title}</h3>
+                  <p className="text-lg text-gray-700 mb-4">{post.body}</p>
+                  <Link
+                    href={`/posts/${post.id}`}
+                    className="text-pink-500 hover:underline font-semibold"
+                  >
+                    Read more
+                  </Link>
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
