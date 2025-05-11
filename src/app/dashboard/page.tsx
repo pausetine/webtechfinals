@@ -1,45 +1,43 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import dynamic from 'next/dynamic';
+import { useQuery } from '@tanstack/react-query';
+import type { ApexOptions } from 'apexcharts';
 
-// ✅ Dynamically import Chart with SSR off
 const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
-const DashboardChart = () => {
-  const [data, setData] = useState({ users: 0, posts: 0, comments: 0 });
+const fetchDashboardData = async () => {
+  const [usersRes, postsRes, commentsRes] = await Promise.all([
+    fetch('https://jsonplaceholder.typicode.com/users'),
+    fetch('https://jsonplaceholder.typicode.com/posts'),
+    fetch('https://jsonplaceholder.typicode.com/comments'),
+  ]);
 
-  const fetchData = async () => {
-    try {
-      const [usersRes, postsRes, commentsRes] = await Promise.all([
-        fetch('https://jsonplaceholder.typicode.com/users'),
-        fetch('https://jsonplaceholder.typicode.com/posts'),
-        fetch('https://jsonplaceholder.typicode.com/comments'),
-      ]);
+  const [users, posts, comments] = await Promise.all([
+    usersRes.json(),
+    postsRes.json(),
+    commentsRes.json(),
+  ]);
 
-      const [users, posts, comments] = await Promise.all([
-        usersRes.json(),
-        postsRes.json(),
-        commentsRes.json(),
-      ]);
-
-      setData({
-        users: users.length,
-        posts: posts.length,
-        comments: comments.length,
-      });
-    } catch (error) {
-      console.error('Failed to fetch data:', error);
-    }
+  return {
+    users: users.length,
+    posts: posts.length,
+    comments: comments.length,
   };
+};
 
-  useEffect(() => {
-    fetchData();
-    const interval = setInterval(fetchData, 10000); // 10 sec refresh
-    return () => clearInterval(interval);
-  }, []);
+const DashboardChart = () => {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['dashboardStats'],
+    queryFn: fetchDashboardData,
+    refetchInterval: 10000, // auto-refresh every 10s
+  });
 
-  const chartOptions = {
+  if (isLoading) return <div>Loading chart...</div>;
+  if (error) return <div>Failed to load chart data</div>;
+
+  const chartOptions: ApexOptions = {
     chart: {
       id: 'dashboard-stats',
       animations: {
@@ -50,9 +48,9 @@ const DashboardChart = () => {
       toolbar: { show: false },
     },
     title: {
-      text: '❤️ Platform Stats Overview',
+      text: 'Platform Statistics',
       align: 'center',
-      style: { fontSize: '20px', color: '#d63384' },
+      style: { fontSize: '20px', color: '#010101', fontFamily: 'Lovely Valentine' },
     },
     xaxis: {
       categories: ['Users', 'Posts', 'Comments'],
@@ -72,7 +70,7 @@ const DashboardChart = () => {
     },
     dataLabels: {
       enabled: true,
-      style: { colors: ['#d63384'] },
+      style: { colors: ['#010101'] },
     },
   };
 
@@ -88,7 +86,6 @@ const DashboardChart = () => {
       <h2 className="text-lg font-semibold mb-2 text-pink-600 flex items-center gap-1">
         ❤️ Dashboard Overview
       </h2>
-      {/* ✅ Use chart safely here */}
       <Chart options={chartOptions} series={chartSeries} type="bar" height={300} />
     </div>
   );
