@@ -9,6 +9,13 @@
   font-style: normal, italic;
 }
 
+@font-face {
+  font-family: 'rainyhearts';
+  src: url('/fonts/rainyhearts.ttf') format('truetype');
+  font-weight: normal, bold;
+  font-style: normal, italic;
+}
+
 
 
 
@@ -17,7 +24,7 @@ body {
   background-image: url('/pinkbg.png');
 }
 
-.card {
+.carddd {
   border-image-source: url('/pinkborder.png');
 }
 
@@ -35,5 +42,11 @@ body {
   border-radius: 40px; /* Optional: for rounded corners */
   
   position: relative;
+}
+
+:root .text-gray-700,
+:root .text-gray-600,
+:root .text-gray-500 {
+  font-family: 'rainyhearts', cursive !important;
 }
 

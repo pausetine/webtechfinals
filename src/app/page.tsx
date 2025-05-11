@@ -57,11 +57,11 @@ export default function HomePage() {
           <div className="space-y-6">
             {posts?.slice(0, 3).map((post: { id: number; title: string; body: string }) => (
               <div key={post.id} className="bg-pink-50 border border-pink-200 p-6 rounded-xl shadow-sm">
-                <h3 className="text-2xl font-bold text-pink-700 mb-2">{post.title}</h3>
+                <h3 className="text-2xl font-bold text-black-100 mb-2">{post.title}</h3>
                 <p className="text-lg text-gray-700 mb-4">{post.body}</p>
                 <Link
                   href={`/posts/${post.id}`}
-                  className="text-pink-600 hover:underline font-semibold"
+                  className="text-pink-500 hover:underline font-semibold"
                 >
                   Read more
                 </Link>
