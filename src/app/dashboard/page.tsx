@@ -42,7 +42,6 @@ const DashboardChart = () => {
       id: 'dashboard-stats',
       animations: {
         enabled: true,
-        easing: 'easeinout',
         speed: 800,
       },
       toolbar: { show: false },
