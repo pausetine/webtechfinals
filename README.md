@@ -35,8 +35,8 @@ Team Member Contributions:
 ---------------------------
 - Fola Faustine Gersalia: Flowbite integration, UI styling, pink theme design, React Query setup, API logic, component structuring,
 - Jessa Garais: ApexCharts setup, dashboard creation, Posts page, Posts/id page 
-- Janceh Hallig:
-- Gloriefe Franche:
+- Janceh Hallig: Border designs, Typeface Combinations, Suggestions 
+- Gloriefe Franche: Made suggestions
 
 Deployed URL:
 https://webtechfinals.vercel.app
