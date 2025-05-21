@@ -35,7 +35,7 @@ Team Member Contributions:
 ---------------------------
 - Fola Faustine Gersalia: Flowbite integration, UI styling, pink theme design, React Query setup, API logic, component structuring, home page, users page, users/id page, data fetching
 - Jessa Garais: ApexCharts setup, dashboard creation, Posts page, Posts/id page, fixed errors regarding syntax
-- Janceh Hallig: Border designs, Typeface Combinations, Suggestions 
+- Janceh Hallig: Border designs, Video Presentation Editing, Typeface Combinations, Suggestions 
 - Gloriefe Franche: Made suggestions
 
 Deployed URL:
